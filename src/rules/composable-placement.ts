@@ -1,24 +1,94 @@
 import { Rule } from 'eslint'
+import { AST } from 'vue-eslint-parser'
 
 const composableNameRE = /^use[A-Z0-9]/
+
+function hasAttribute(el: AST.VElement, name: string): boolean {
+  return el.startTag.attributes.some(
+    (attr) => !attr.directive && attr.key.name === name
+  )
+}
+
+function getScriptSetupElement(context: Rule.RuleContext): AST.VElement | null {
+  const df =
+    context.parserServices.getDocumentFragment &&
+    context.parserServices.getDocumentFragment()
+  if (!df) {
+    return null
+  }
+
+  const scripts: AST.VElement[] = df.children.filter(
+    (e: AST.Node) => e.type === 'VElement' && e.name === 'script'
+  )
+
+  return scripts.find((e) => hasAttribute(e, 'setup')) ?? null
+}
 
 export default {
   meta: {
     type: 'problem',
   },
   create(context) {
+    const scriptSetup = getScriptSetupElement(context)
+
+    function inScriptSetup(node: Rule.Node): boolean {
+      if (!scriptSetup || !node.range) {
+        return false
+      }
+
+      return (
+        node.range[0] >= scriptSetup.range[0] &&
+        node.range[1] <= scriptSetup.range[1]
+      )
+    }
+
     return {
       CallExpression(node) {
         if (
           node.callee.type === 'Identifier' &&
           node.callee.name.match(composableNameRE)
         ) {
-          const scope = context.sourceCode.getScope(node)
-          if (
-            scope.block.type === 'FunctionDeclaration' &&
-            scope.block.id?.name.match(composableNameRE)
-          ) {
+          if (inScriptSetup(node)) {
             return
+          }
+
+          const scope = context.sourceCode.getScope(node)
+          const block = scope.block as Rule.Node
+
+          const isComposableScope =
+            block.type === 'FunctionDeclaration' &&
+            block.id?.name.match(composableNameRE)
+
+          if (isComposableScope) {
+            return
+          }
+
+          const isSetupScope =
+            block.type === 'FunctionExpression' &&
+            block.parent.type === 'Property' &&
+            block.parent.key.type === 'Identifier' &&
+            block.parent.key.name === 'setup' &&
+            block.parent.parent.parent.type === 'CallExpression' &&
+            block.parent.parent.parent.callee.type === 'Identifier' &&
+            block.parent.parent.parent.callee.name === 'defineComponent'
+
+          if (isSetupScope) {
+            const scope = context.sourceCode.getScope(
+              block.parent.parent.parent
+            )
+            const defineComponent = scope.variables.find(
+              (v) => v.name === 'defineComponent'
+            )
+            const isImportedFromVue = defineComponent?.defs.some((def) => {
+              return (
+                def.parent?.type === 'ImportDeclaration' &&
+                def.parent.source.value === 'vue'
+              )
+            })
+
+            if (isImportedFromVue) {
+              return
+            }
           }
 
           context.report({
