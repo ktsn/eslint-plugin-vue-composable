@@ -6,7 +6,7 @@
   "files": [
     "dist/**/*"
   ],
-  "description": "ESLint plugin providing rules related to Vue composable",
+  "description": "ESLint plugin providing Vue composable related rules",
   "keywords": [
     "eslint",
     "eslint-plugin",

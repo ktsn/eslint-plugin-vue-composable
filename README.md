@@ -1,6 +1,6 @@
 # eslint-plugin-vue-composable
 
-ESLint plugin providing rules related to Vue composable.
+ESLint plugin providing Vue composable related rules.
 
 ## Installation
 
