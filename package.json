@@ -1,7 +1,9 @@
 {
   "name": "eslint-plugin-vue-composale",
   "version": "0.0.0",
+  "license": "MIT",
   "scripts": {
+    "build": "tsc -p .",
     "test": "jest"
   },
   "devDependencies": {

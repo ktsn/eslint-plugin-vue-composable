@@ -1,6 +1,6 @@
 import { Rule } from 'eslint'
 import * as ESTree from 'estree'
-import assert from 'assert'
+import * as assert from 'assert'
 import { AST } from 'vue-eslint-parser'
 
 const composableNameRE = /^use[A-Z0-9]/
