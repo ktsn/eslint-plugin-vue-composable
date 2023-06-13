@@ -147,6 +147,28 @@ describe('vue-composable/composable-placement', () => {
         })
         `,
       },
+      {
+        code: `
+        import { defineStore } from 'pinia'
+        import { useAnotherStore } from './another-store'
+        const useStore = defineStore('store', {
+          actions: {
+            foo() {
+              useAnotherStore()
+            }
+          }
+        })
+        `,
+      },
+      {
+        code: `
+        import { defineStore } from 'pinia'
+        import { useAnotherStore } from './another-store'
+        const useStore = defineStore('store', () => {
+          useAnotherStore()
+        })
+        `,
+      },
     ],
     invalid: [
       {

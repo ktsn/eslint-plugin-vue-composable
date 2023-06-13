@@ -68,6 +68,18 @@ function isSetupOption(node: Rule.Node): boolean {
   )
 }
 
+function inPiniaStore(node: Rule.Node | null): boolean {
+  if (!node) {
+    return false
+  }
+
+  if (node.type !== 'CallExpression') {
+    return inPiniaStore(node.parent)
+  }
+
+  return getCalleeName(node.callee) === 'defineStore'
+}
+
 export default {
   meta: {
     type: 'problem',
@@ -132,7 +144,12 @@ export default {
         const isScriptSetupRoot =
           inScriptSetup(node) && block.type === 'Program'
 
-        if (!isComposableScope && !isSetupScope && !isScriptSetupRoot) {
+        if (
+          !isComposableScope &&
+          !isSetupScope &&
+          !isScriptSetupRoot &&
+          !inPiniaStore(node.parent)
+        ) {
           context.report({
             node,
             message:
