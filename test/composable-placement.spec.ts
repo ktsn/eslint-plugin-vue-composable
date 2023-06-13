@@ -23,6 +23,15 @@ describe('vue-composable/composable-placement', () => {
       },
       {
         code: `
+        import * as foo from './foo'
+
+        export function useBar() {
+          foo.useFoo()
+        }
+        `,
+      },
+      {
+        code: `
         import { defineComponent } from 'vue'
         import { useFoo } from './foo'
 
@@ -72,6 +81,16 @@ describe('vue-composable/composable-placement', () => {
 
         export function bar() {
           useFoo()
+        }
+        `,
+        errors: [{}],
+      },
+      {
+        code: `
+        import * as foo from './foo'
+
+        export function bar() {
+          foo.useFoo()
         }
         `,
         errors: [{}],

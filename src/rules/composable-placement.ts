@@ -1,4 +1,5 @@
 import { Rule } from 'eslint'
+import * as ESTree from 'estree'
 import { AST } from 'vue-eslint-parser'
 
 const composableNameRE = /^use[A-Z0-9]/
@@ -24,10 +25,23 @@ function getScriptSetupElement(context: Rule.RuleContext): AST.VElement | null {
   return scripts.find((e) => hasAttribute(e, 'setup')) ?? null
 }
 
+function getCalleeName(node: ESTree.Node): string | null {
+  if (node.type === 'Identifier') {
+    return node.name
+  }
+
+  if (node.type === 'MemberExpression') {
+    return getCalleeName(node.property)
+  }
+
+  return null
+}
+
 export default {
   meta: {
     type: 'problem',
   },
+
   create(context) {
     const scriptSetup = getScriptSetupElement(context)
 
@@ -44,10 +58,7 @@ export default {
 
     return {
       CallExpression(node) {
-        if (
-          node.callee.type === 'Identifier' &&
-          node.callee.name.match(composableNameRE)
-        ) {
+        if (getCalleeName(node.callee)?.match(composableNameRE)) {
           const scope = context.sourceCode.getScope(node)
           const block = scope.block as Rule.Node
 
