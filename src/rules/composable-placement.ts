@@ -68,16 +68,40 @@ function isSetupOption(node: Rule.Node): boolean {
   )
 }
 
-function inPiniaStore(node: Rule.Node | null): boolean {
+function inPiniaStoreArg(node: Rule.Node | null): boolean {
   if (!node) {
     return false
   }
 
+  if (
+    node.type === 'FunctionDeclaration' ||
+    node.type === 'FunctionExpression' ||
+    node.type === 'ArrowFunctionExpression'
+  ) {
+    return false
+  }
+
   if (node.type !== 'CallExpression') {
-    return inPiniaStore(node.parent)
+    return inPiniaStoreArg(node.parent)
   }
 
   return getCalleeName(node.callee) === 'defineStore'
+}
+
+function inPiniaStoreRootScope(node: Rule.Node | null): boolean {
+  if (!node) {
+    return false
+  }
+
+  if (
+    node.type === 'FunctionDeclaration' ||
+    node.type === 'FunctionExpression' ||
+    node.type === 'ArrowFunctionExpression'
+  ) {
+    return inPiniaStoreArg(node.parent)
+  }
+
+  return inPiniaStoreRootScope(node.parent)
 }
 
 export default {
@@ -148,7 +172,7 @@ export default {
           !isComposableScope &&
           !isSetupScope &&
           !isScriptSetupRoot &&
-          !inPiniaStore(node.parent)
+          !inPiniaStoreRootScope(node)
         ) {
           context.report({
             node,
