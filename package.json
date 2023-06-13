@@ -1,5 +1,5 @@
 {
-  "name": "eslint-plugin-vue-composale",
+  "name": "eslint-plugin-vue-composable",
   "version": "0.0.0",
   "license": "MIT",
   "main": "dist/index.js",
