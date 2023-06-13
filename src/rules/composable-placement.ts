@@ -141,13 +141,14 @@ export default {
       )
     }
 
-    const functionStack: { node: Rule.Node; afterAwait: boolean }[] = []
+    const functionStack: { node: Rule.Node; firstAwait: Rule.Node | null }[] =
+      []
 
     return {
       ':function'(node: Rule.Node) {
         functionStack.push({
           node,
-          afterAwait: false,
+          firstAwait: null,
         })
       },
 
@@ -157,9 +158,12 @@ export default {
         functionStack.pop()
       },
 
-      AwaitExpression() {
+      AwaitExpression(node) {
         if (functionStack.length > 0) {
-          functionStack[functionStack.length - 1]!.afterAwait = true
+          const current = functionStack[functionStack.length - 1]!
+          if (!current.firstAwait) {
+            current.firstAwait = node
+          }
         }
       },
 
@@ -169,10 +173,12 @@ export default {
           return
         }
 
-        const { afterAwait } = functionStack[functionStack.length - 1] ?? {
-          afterAwait: false,
+        const { firstAwait } = functionStack[functionStack.length - 1] ?? {
+          firstAwait: null,
         }
-        if (afterAwait) {
+
+        // Forbidden composable after await but allow if the first await is for this CallExpression.
+        if (firstAwait && firstAwait !== node.parent) {
           context.report({
             node,
             messageId: 'afterAwait',

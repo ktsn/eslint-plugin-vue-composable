@@ -74,6 +74,15 @@ describe('vue-composable/composable-placement', () => {
         import { useFoo } from './foo'
 
         export async function useBar() {
+          await useFoo()
+        }
+        `,
+      },
+      {
+        code: `
+        import { useFoo } from './foo'
+
+        export async function useBar() {
           async function baz() {
             await fetch()
           }
@@ -240,6 +249,24 @@ describe('vue-composable/composable-placement', () => {
         export async function useBar() {
           await fetch()
           useFoo()
+        }
+        `,
+        errors: [
+          {
+            messageId: 'afterAwait',
+            data: {
+              name: 'useFoo',
+            },
+          },
+        ],
+      },
+      {
+        code: `
+        import { useFoo } from './foo'
+
+        export async function useBar() {
+          await fetch()
+          await useFoo()
         }
         `,
         errors: [
