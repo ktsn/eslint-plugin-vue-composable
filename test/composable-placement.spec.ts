@@ -4,7 +4,7 @@ import rule from '../src/rules/composable-placement'
 const ruleTester = new RuleTester({
   parser: require.resolve('vue-eslint-parser'),
   parserOptions: {
-    ecmaVersion: 6,
+    ecmaVersion: 2022,
     sourceType: 'module',
   },
 })
@@ -182,6 +182,19 @@ describe('vue-composable/composable-placement', () => {
             useFoo()
           }
         })
+        </script>
+        `,
+        errors: [{}],
+      },
+      {
+        filename: 'not-in-root-script-setup.vue',
+        code: `
+        <script setup>
+        import { useFoo } from './foo'
+
+        function bar() {
+          useFoo()
+        }
         </script>
         `,
         errors: [{}],

@@ -48,10 +48,6 @@ export default {
           node.callee.type === 'Identifier' &&
           node.callee.name.match(composableNameRE)
         ) {
-          if (inScriptSetup(node)) {
-            return
-          }
-
           const scope = context.sourceCode.getScope(node)
           const block = scope.block as Rule.Node
 
@@ -59,7 +55,9 @@ export default {
             block.type === 'FunctionDeclaration' &&
             block.id?.name.match(composableNameRE)
 
-          if (isComposableScope) {
+          const isScriptSetupRoot =
+            inScriptSetup(node) && block.type === 'Program'
+          if (isComposableScope || isScriptSetupRoot) {
             return
           }
 
