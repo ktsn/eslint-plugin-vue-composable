@@ -50,12 +50,35 @@ describe('vue-composable/composable-placement', () => {
       },
       {
         code: `
+        import { useFoo } from './foo'
+
+        export async function useBar() {
+          useFoo()
+          await fetch()
+        }
+        `,
+      },
+      {
+        code: `
         import { defineComponent } from 'vue'
         import { useFoo } from './foo'
 
         export default defineComponent({
           setup() {
             useFoo()
+          }
+        })
+        `,
+      },
+      {
+        code: `
+        import { defineComponent } from 'vue'
+        import { useFoo } from './foo'
+
+        export default defineComponent({
+          async setup() {
+            useFoo()
+            await fetch()
           }
         })
         `,
@@ -117,6 +140,17 @@ describe('vue-composable/composable-placement', () => {
         code: `
         import { useFoo } from './foo'
 
+        export async function useBar() {
+          await fetch()
+          useFoo()
+        }
+        `,
+        errors: [{}],
+      },
+      {
+        code: `
+        import { useFoo } from './foo'
+
         export function useBar() {
           function baz() {
             useFoo()
@@ -132,6 +166,20 @@ describe('vue-composable/composable-placement', () => {
 
         export default defineComponent({
           render() {
+            useFoo()
+          }
+        })
+        `,
+        errors: [{}],
+      },
+      {
+        code: `
+        import { defineComponent } from 'vue'
+        import { useFoo } from './foo'
+
+        export default defineComponent({
+          async setup() {
+            await fetch()
             useFoo()
           }
         })

@@ -3,7 +3,9 @@
     "target": "ES2022",
     "module": "CommonJS",
     "moduleResolution": "node",
-    "strict": true
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "esModuleInterop": true
   },
   "include": ["src/**/*"]
 }

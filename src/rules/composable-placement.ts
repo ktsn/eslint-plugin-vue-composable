@@ -1,5 +1,6 @@
 import { Rule } from 'eslint'
 import * as ESTree from 'estree'
+import assert from 'assert'
 import { AST } from 'vue-eslint-parser'
 
 const composableNameRE = /^use[A-Z0-9]/
@@ -86,21 +87,52 @@ export default {
       )
     }
 
+    const functionStack: { node: Rule.Node; afterAwait: boolean }[] = []
+
     return {
+      ':function'(node: Rule.Node) {
+        functionStack.push({
+          node,
+          afterAwait: false,
+        })
+      },
+
+      ':function:exit'(node: Rule.Node) {
+        const last = functionStack[functionStack.length - 1]
+        assert(last?.node === node)
+        functionStack.pop()
+      },
+
+      AwaitExpression() {
+        if (functionStack.length > 0) {
+          functionStack[functionStack.length - 1]!.afterAwait = true
+        }
+      },
+
       CallExpression(node) {
-        if (getCalleeName(node.callee)?.match(composableNameRE)) {
-          const scope = context.sourceCode.getScope(node)
-          const block = scope.block as Rule.Node
+        if (!getCalleeName(node.callee)?.match(composableNameRE)) {
+          return
+        }
 
-          const isComposableScope = isComposableFunction(block)
-          const isSetupScope = isSetupOption(block)
-          const isScriptSetupRoot =
-            inScriptSetup(node) && block.type === 'Program'
+        const { afterAwait } = functionStack[functionStack.length - 1] ?? {
+          afterAwait: false,
+        }
+        if (afterAwait) {
+          context.report({
+            node,
+            message: 'Composable function must not be placed after await.',
+          })
+        }
 
-          if (isComposableScope || isSetupScope || isScriptSetupRoot) {
-            return
-          }
+        const scope = context.sourceCode.getScope(node)
+        const block = scope.block as Rule.Node
 
+        const isComposableScope = isComposableFunction(block)
+        const isSetupScope = isSetupOption(block)
+        const isScriptSetupRoot =
+          inScriptSetup(node) && block.type === 'Program'
+
+        if (!isComposableScope && !isSetupScope && !isScriptSetupRoot) {
           context.report({
             node,
             message:
