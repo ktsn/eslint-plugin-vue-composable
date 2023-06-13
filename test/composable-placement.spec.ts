@@ -233,6 +233,16 @@ describe('vue-composable/composable-placement', () => {
         </script>
         `,
       },
+      {
+        filename: 'after-await.vue',
+        code: `
+        <script setup>
+        import { useFoo } from './foo'
+        await fetch()
+        useFoo()
+        </script>
+        `,
+      },
     ],
     invalid: [
       {
@@ -257,6 +267,19 @@ describe('vue-composable/composable-placement', () => {
         </script>
         </script setup>
         const bar = 1
+        </script>
+        `,
+        errors: [{}],
+      },
+      {
+        filename: 'after-await-in-composable.vue',
+        code: `
+        <script setup>
+        import { useFoo } from './foo'
+        async function useBar() {
+          await fetch()
+          useFoo()
+        }
         </script>
         `,
         errors: [{}],
