@@ -60,6 +60,21 @@ describe('vue-composable/composable-placement', () => {
       },
       {
         code: `
+        import { useFoo } from './foo'
+
+        export async function useBar() {
+          async function baz() {
+            await fetch()
+          }
+          useFoo()
+          async function qux() {
+            await fetch()
+          }
+        }
+        `,
+      },
+      {
+        code: `
         import { defineComponent } from 'vue'
         import { useFoo } from './foo'
 
@@ -78,6 +93,24 @@ describe('vue-composable/composable-placement', () => {
         export default defineComponent({
           async setup() {
             useFoo()
+            await fetch()
+          }
+        })
+        `,
+      },
+      {
+        code: `
+        import { defineComponent } from 'vue'
+        import { useFoo } from './foo'
+
+        export default defineComponent({
+          async bar() {
+            await fetch()
+          },
+          setup() {
+            useFoo()
+          },
+          async baz() {
             await fetch()
           }
         })
