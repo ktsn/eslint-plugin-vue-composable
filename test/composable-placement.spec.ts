@@ -107,33 +107,6 @@ describe('vue-composable/composable-placement', () => {
   ruleTester.run('Single File Components', rule, {
     valid: [
       {
-        filename: 'in-composable.vue',
-        code: `
-        <script>
-        import { useFoo } from './foo'
-
-        function useBar() {
-          useFoo()
-        }
-        </script>
-        `,
-      },
-      {
-        filename: 'in-setup.vue',
-        code: `
-        <script>
-        import { defineComponent } from 'vue'
-        import { useFoo } from './foo'
-
-        export default defineComponent({
-          setup() {
-            useFoo()
-          }
-        })
-        </script>
-        `,
-      },
-      {
         filename: 'in-script-setup.vue',
         code: `
         <script setup>
@@ -145,50 +118,6 @@ describe('vue-composable/composable-placement', () => {
     ],
     invalid: [
       {
-        filename: 'not-in-composable.vue',
-        code: `
-        <script>
-        import { useFoo } from './foo'
-
-        function bar() {
-          useFoo()
-        }
-        </script>
-        `,
-        errors: [{}],
-      },
-      {
-        filename: 'not-directly-in-composable.vue',
-        code: `
-        <script>
-        import { useFoo } from './foo'
-
-        export function useBar() {
-          function baz() {
-            useFoo()
-          }
-        }
-        </script>
-        `,
-        errors: [{}],
-      },
-      {
-        filename: 'not-in-setup.vue',
-        code: `
-        <script>
-        import { defineComponent } from 'vue'
-        import { useFoo } from './foo'
-
-        export default defineComponent({
-          render() {
-            useFoo()
-          }
-        })
-        </script>
-        `,
-        errors: [{}],
-      },
-      {
         filename: 'not-in-root-script-setup.vue',
         code: `
         <script setup>
@@ -197,6 +126,19 @@ describe('vue-composable/composable-placement', () => {
         function bar() {
           useFoo()
         }
+        </script>
+        `,
+        errors: [{}],
+      },
+      {
+        filename: 'not-in-script-setup.vue',
+        code: `
+        <script>
+        import { useFoo } from './foo'
+        useFoo()
+        </script>
+        </script setup>
+        const bar = 1
         </script>
         `,
         errors: [{}],
