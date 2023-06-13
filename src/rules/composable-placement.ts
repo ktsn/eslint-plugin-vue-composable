@@ -108,7 +108,7 @@ export default {
   meta: {
     type: 'problem',
     messages: {
-      scope:
+      invalidScope:
         'Composable must be called in the root scope of setup(), another composable or a pinia store definition',
       afterAwait: 'Composable must not be called after await',
     },
@@ -181,7 +181,7 @@ export default {
         ) {
           context.report({
             node,
-            messageId: 'scope',
+            messageId: 'invalidScope',
           })
         }
       },

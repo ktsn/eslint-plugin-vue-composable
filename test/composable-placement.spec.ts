@@ -179,7 +179,7 @@ describe('vue-composable/composable-placement', () => {
           useFoo()
         }
         `,
-        errors: [{}],
+        errors: [{ messageId: 'invalidScope' }],
       },
       {
         code: `
@@ -189,7 +189,7 @@ describe('vue-composable/composable-placement', () => {
           foo.useFoo()
         }
         `,
-        errors: [{}],
+        errors: [{ messageId: 'invalidScope' }],
       },
       {
         code: `
@@ -200,7 +200,7 @@ describe('vue-composable/composable-placement', () => {
           useFoo()
         }
         `,
-        errors: [{}],
+        errors: [{ messageId: 'afterAwait' }],
       },
       {
         code: `
@@ -212,7 +212,7 @@ describe('vue-composable/composable-placement', () => {
           }
         }
         `,
-        errors: [{}],
+        errors: [{ messageId: 'invalidScope' }],
       },
       {
         code: `
@@ -225,7 +225,7 @@ describe('vue-composable/composable-placement', () => {
           }
         })
         `,
-        errors: [{}],
+        errors: [{ messageId: 'invalidScope' }],
       },
       {
         code: `
@@ -239,7 +239,7 @@ describe('vue-composable/composable-placement', () => {
           }
         })
         `,
-        errors: [{}],
+        errors: [{ messageId: 'afterAwait' }],
       },
       {
         code: `
@@ -255,7 +255,7 @@ describe('vue-composable/composable-placement', () => {
           }
         })
         `,
-        errors: [{}],
+        errors: [{ messageId: 'invalidScope' }],
       },
       {
         code: `
@@ -267,7 +267,7 @@ describe('vue-composable/composable-placement', () => {
           }
         })
         `,
-        errors: [{}],
+        errors: [{ messageId: 'invalidScope' }],
       },
     ],
   })
@@ -306,7 +306,7 @@ describe('vue-composable/composable-placement', () => {
         }
         </script>
         `,
-        errors: [{}],
+        errors: [{ messageId: 'invalidScope' }],
       },
       {
         filename: 'not-in-script-setup.vue',
@@ -319,7 +319,7 @@ describe('vue-composable/composable-placement', () => {
         const bar = 1
         </script>
         `,
-        errors: [{}],
+        errors: [{ messageId: 'invalidScope' }],
       },
       {
         filename: 'after-await-in-composable.vue',
@@ -332,7 +332,7 @@ describe('vue-composable/composable-placement', () => {
         }
         </script>
         `,
-        errors: [{}],
+        errors: [{ messageId: 'afterAwait' }],
       },
     ],
   })
