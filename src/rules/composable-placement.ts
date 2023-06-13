@@ -107,6 +107,11 @@ function inPiniaStoreRootScope(node: Rule.Node | null): boolean {
 export default {
   meta: {
     type: 'problem',
+    messages: {
+      scope:
+        'Composable must be called in the root scope of setup(), another composable or a pinia store definition',
+      afterAwait: 'Composable must not be called after await',
+    },
   },
 
   create(context) {
@@ -156,7 +161,7 @@ export default {
         if (afterAwait) {
           context.report({
             node,
-            message: 'Composable function must not be placed after await.',
+            messageId: 'afterAwait',
           })
         }
 
@@ -176,8 +181,7 @@ export default {
         ) {
           context.report({
             node,
-            message:
-              'Composable function must be placed in the root scope of another composable function.',
+            messageId: 'scope',
           })
         }
       },
