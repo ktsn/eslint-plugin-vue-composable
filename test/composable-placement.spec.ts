@@ -190,7 +190,12 @@ describe('vue-composable/composable-placement', () => {
           useFoo()
         }
         `,
-        errors: [{ messageId: 'invalidScope' }],
+        errors: [
+          {
+            messageId: 'invalidContext',
+            data: { name: 'useFoo' },
+          },
+        ],
       },
       {
         code: `
@@ -200,7 +205,12 @@ describe('vue-composable/composable-placement', () => {
           foo.useFoo()
         }
         `,
-        errors: [{ messageId: 'invalidScope' }],
+        errors: [
+          {
+            messageId: 'invalidContext',
+            data: { name: 'useFoo' },
+          },
+        ],
       },
       {
         code: `
@@ -214,7 +224,14 @@ describe('vue-composable/composable-placement', () => {
           }
         }
         `,
-        errors: [{ messageId: 'invalidScope' }],
+        errors: [
+          {
+            messageId: 'invalidContext',
+            data: {
+              name: 'useFoo',
+            },
+          },
+        ],
       },
       {
         code: `
@@ -225,7 +242,14 @@ describe('vue-composable/composable-placement', () => {
           useFoo()
         }
         `,
-        errors: [{ messageId: 'afterAwait' }],
+        errors: [
+          {
+            messageId: 'afterAwait',
+            data: {
+              name: 'useFoo',
+            },
+          },
+        ],
       },
       {
         code: `
@@ -237,7 +261,14 @@ describe('vue-composable/composable-placement', () => {
           }
         }
         `,
-        errors: [{ messageId: 'invalidScope' }],
+        errors: [
+          {
+            messageId: 'invalidContext',
+            data: {
+              name: 'useFoo',
+            },
+          },
+        ],
       },
       {
         code: `
@@ -250,7 +281,14 @@ describe('vue-composable/composable-placement', () => {
           }
         })
         `,
-        errors: [{ messageId: 'invalidScope' }],
+        errors: [
+          {
+            messageId: 'invalidContext',
+            data: {
+              name: 'useFoo',
+            },
+          },
+        ],
       },
       {
         code: `
@@ -264,7 +302,14 @@ describe('vue-composable/composable-placement', () => {
           }
         })
         `,
-        errors: [{ messageId: 'afterAwait' }],
+        errors: [
+          {
+            messageId: 'afterAwait',
+            data: {
+              name: 'useFoo',
+            },
+          },
+        ],
       },
       {
         code: `
@@ -280,7 +325,14 @@ describe('vue-composable/composable-placement', () => {
           }
         })
         `,
-        errors: [{ messageId: 'invalidScope' }],
+        errors: [
+          {
+            messageId: 'invalidContext',
+            data: {
+              name: 'useAnotherStore',
+            },
+          },
+        ],
       },
       {
         code: `
@@ -292,7 +344,14 @@ describe('vue-composable/composable-placement', () => {
           }
         })
         `,
-        errors: [{ messageId: 'invalidScope' }],
+        errors: [
+          {
+            messageId: 'invalidContext',
+            data: {
+              name: 'useAnotherStore',
+            },
+          },
+        ],
       },
     ],
   })
@@ -331,7 +390,14 @@ describe('vue-composable/composable-placement', () => {
         }
         </script>
         `,
-        errors: [{ messageId: 'invalidScope' }],
+        errors: [
+          {
+            messageId: 'invalidContext',
+            data: {
+              name: 'useFoo',
+            },
+          },
+        ],
       },
       {
         filename: 'not-in-script-setup.vue',
@@ -344,7 +410,14 @@ describe('vue-composable/composable-placement', () => {
         const bar = 1
         </script>
         `,
-        errors: [{ messageId: 'invalidScope' }],
+        errors: [
+          {
+            messageId: 'invalidContext',
+            data: {
+              name: 'useFoo',
+            },
+          },
+        ],
       },
       {
         filename: 'after-await-in-composable.vue',
@@ -357,7 +430,14 @@ describe('vue-composable/composable-placement', () => {
         }
         </script>
         `,
-        errors: [{ messageId: 'afterAwait' }],
+        errors: [
+          {
+            messageId: 'afterAwait',
+            data: {
+              name: 'useFoo',
+            },
+          },
+        ],
       },
     ],
   })

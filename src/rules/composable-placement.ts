@@ -120,9 +120,10 @@ export default {
   meta: {
     type: 'problem',
     messages: {
-      invalidScope:
-        'Composable must be called in the root scope of setup(), another composable or a pinia store definition',
-      afterAwait: 'Composable must not be called after await',
+      invalidContext:
+        '`{{ name }}` is likely a composable and should be called in root context of setup() or another composable.',
+      afterAwait:
+        '`{{ name }}` is likely a composable and is forbidden after an `await` expression.',
     },
   },
 
@@ -163,7 +164,8 @@ export default {
       },
 
       CallExpression(node) {
-        if (!getCalleeName(node.callee)?.match(composableNameRE)) {
+        const name = getCalleeName(node.callee)
+        if (!name?.match(composableNameRE)) {
           return
         }
 
@@ -174,6 +176,9 @@ export default {
           context.report({
             node,
             messageId: 'afterAwait',
+            data: {
+              name,
+            },
           })
         }
 
@@ -191,7 +196,10 @@ export default {
         ) {
           context.report({
             node,
-            messageId: 'invalidScope',
+            messageId: 'invalidContext',
+            data: {
+              name,
+            },
           })
         }
       },
