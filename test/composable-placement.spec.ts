@@ -33,6 +33,37 @@ describe('vue-composable/composable-placement', () => {
         })
         `,
       },
+      {
+        code: `
+        import { useFoo } from './foo'
+        export default {
+          setup() {
+            useFoo()
+          }
+        }
+        `,
+      },
+      {
+        code: `
+        import { useFoo } from './foo'
+        export default {
+          setup: () => {
+            useFoo()
+          }
+        }
+        `,
+      },
+      {
+        code: `
+        import Vue from 'vue'
+        import { useFoo } from './foo'
+        Vue.component('foo', {
+          setup() {
+            useFoo()
+          }
+        })
+        `,
+      },
     ],
     invalid: [
       {
@@ -54,19 +85,6 @@ describe('vue-composable/composable-placement', () => {
             useFoo()
           }
         }
-        `,
-        errors: [{}],
-      },
-      {
-        code: `
-        import { defineComponent } from 'bar'
-        import { useFoo } from './foo'
-
-        export default defineComponent({
-          setup() {
-            useFoo()
-          }
-        })
         `,
         errors: [{}],
       },
@@ -150,22 +168,6 @@ describe('vue-composable/composable-placement', () => {
             useFoo()
           }
         }
-        </script>
-        `,
-        errors: [{}],
-      },
-      {
-        filename: 'not-in-vue-define-component.vue',
-        code: `
-        <script>
-        import { defineComponent } from 'bar'
-        import { useFoo } from './foo'
-
-        export default defineComponent({
-          setup() {
-            useFoo()
-          }
-        })
         </script>
         `,
         errors: [{}],

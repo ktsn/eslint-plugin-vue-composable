@@ -62,31 +62,15 @@ export default {
           }
 
           const isSetupScope =
-            block.type === 'FunctionExpression' &&
+            (block.type === 'FunctionExpression' ||
+              block.type === 'ArrowFunctionExpression') &&
             block.parent.type === 'Property' &&
             block.parent.key.type === 'Identifier' &&
             block.parent.key.name === 'setup' &&
-            block.parent.parent.parent.type === 'CallExpression' &&
-            block.parent.parent.parent.callee.type === 'Identifier' &&
-            block.parent.parent.parent.callee.name === 'defineComponent'
+            block.parent.parent.type === 'ObjectExpression'
 
           if (isSetupScope) {
-            const scope = context.sourceCode.getScope(
-              block.parent.parent.parent
-            )
-            const defineComponent = scope.variables.find(
-              (v) => v.name === 'defineComponent'
-            )
-            const isImportedFromVue = defineComponent?.defs.some((def) => {
-              return (
-                def.parent?.type === 'ImportDeclaration' &&
-                def.parent.source.value === 'vue'
-              )
-            })
-
-            if (isImportedFromVue) {
-              return
-            }
+            return
           }
 
           context.report({
