@@ -23,6 +23,24 @@ describe('vue-composable/composable-placement', () => {
       },
       {
         code: `
+        import { useFoo } from './foo'
+
+        export const useBar = () => {
+          useFoo()
+        }
+        `,
+      },
+      {
+        code: `
+        import { useFoo } from './foo'
+
+        export const useBar = function() {
+          useFoo()
+        }
+        `,
+      },
+      {
+        code: `
         import * as foo from './foo'
 
         export function useBar() {

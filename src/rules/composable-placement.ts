@@ -37,6 +37,36 @@ function getCalleeName(node: ESTree.Node): string | null {
   return null
 }
 
+function isComposableFunction(node: Rule.Node): boolean {
+  if (node.type === 'FunctionDeclaration') {
+    return composableNameRE.test(node.id?.name ?? '')
+  }
+
+  if (
+    node.type === 'FunctionExpression' ||
+    node.type === 'ArrowFunctionExpression'
+  ) {
+    return (
+      node.parent.type === 'VariableDeclarator' &&
+      node.parent.id.type === 'Identifier' &&
+      composableNameRE.test(node.parent.id.name)
+    )
+  }
+
+  return false
+}
+
+function isSetupOption(node: Rule.Node): boolean {
+  return (
+    (node.type === 'FunctionExpression' ||
+      node.type === 'ArrowFunctionExpression') &&
+    node.parent.type === 'Property' &&
+    node.parent.key.type === 'Identifier' &&
+    node.parent.key.name === 'setup' &&
+    node.parent.parent.type === 'ObjectExpression'
+  )
+}
+
 export default {
   meta: {
     type: 'problem',
@@ -62,25 +92,12 @@ export default {
           const scope = context.sourceCode.getScope(node)
           const block = scope.block as Rule.Node
 
-          const isComposableScope =
-            block.type === 'FunctionDeclaration' &&
-            block.id?.name.match(composableNameRE)
-
+          const isComposableScope = isComposableFunction(block)
+          const isSetupScope = isSetupOption(block)
           const isScriptSetupRoot =
             inScriptSetup(node) && block.type === 'Program'
-          if (isComposableScope || isScriptSetupRoot) {
-            return
-          }
 
-          const isSetupScope =
-            (block.type === 'FunctionExpression' ||
-              block.type === 'ArrowFunctionExpression') &&
-            block.parent.type === 'Property' &&
-            block.parent.key.type === 'Identifier' &&
-            block.parent.key.name === 'setup' &&
-            block.parent.parent.type === 'ObjectExpression'
-
-          if (isSetupScope) {
+          if (isComposableScope || isSetupScope || isScriptSetupRoot) {
             return
           }
 
