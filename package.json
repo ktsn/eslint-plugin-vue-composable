@@ -3,6 +3,16 @@
   "version": "0.0.0",
   "license": "MIT",
   "main": "dist/index.js",
+  "files": [
+    "dist/**/*"
+  ],
+  "description": "ESLint plugin providing rules related to Vue composable",
+  "keywords": [
+    "eslint",
+    "eslint-plugin",
+    "vue",
+    "composable"
+  ],
   "scripts": {
     "build": "tsc -p .",
     "test": "jest"
@@ -16,5 +26,8 @@
     "ts-jest": "^29.1.0",
     "typescript": "^5.1.3",
     "vue-eslint-parser": "^9.3.1"
+  },
+  "peerDependencies": {
+    "eslint": ">=8.0.0"
   }
 }

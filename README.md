@@ -1,6 +1,30 @@
 # eslint-plugin-vue-composable
 
-ESLint plugin providing rules related to composable.
+ESLint plugin providing rules related to Vue composable.
+
+## Installation
+
+Install it with:
+
+```sh
+$ npm install -D eslint-plugin-vue-composable
+```
+
+You have to install `eslint` and `eslint-plugin-vue` if you have not installed them yet:
+
+```sh
+& npm install -D eslint eslint-plugin-vue
+```
+
+Then add configuration in your `.eslintrc`:
+
+```js
+module.exports = {
+  extends: [
+    'plugin:vue-composable/recommended'
+  ]
+}
+```
 
 ## Rules
 
