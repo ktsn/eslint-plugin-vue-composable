@@ -13,7 +13,7 @@ $ npm install -D eslint-plugin-vue-composable
 You have to install `eslint` and `eslint-plugin-vue` if you have not installed them yet:
 
 ```sh
-& npm install -D eslint eslint-plugin-vue
+$ npm install -D eslint eslint-plugin-vue
 ```
 
 Then add configuration in your `.eslintrc`:
