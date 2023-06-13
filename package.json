@@ -15,7 +15,9 @@
   ],
   "scripts": {
     "build": "tsc -p .",
-    "test": "jest"
+    "clean": "rm -rf dist",
+    "test": "jest",
+    "prepublishOnly": "yarn test && yarn clean && yarn build"
   },
   "devDependencies": {
     "@types/eslint": "^8.40.1",
