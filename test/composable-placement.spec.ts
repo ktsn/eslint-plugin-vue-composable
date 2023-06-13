@@ -52,6 +52,17 @@ describe('vue-composable/composable-placement', () => {
         code: `
         import { useFoo } from './foo'
 
+        export function useBar() {
+          if (bar) {
+            useFoo()
+          }
+        }
+        `,
+      },
+      {
+        code: `
+        import { useFoo } from './foo'
+
         export async function useBar() {
           useFoo()
           await fetch()
@@ -187,6 +198,20 @@ describe('vue-composable/composable-placement', () => {
 
         export function bar() {
           foo.useFoo()
+        }
+        `,
+        errors: [{ messageId: 'invalidScope' }],
+      },
+      {
+        code: `
+        import { useFoo } from './foo'
+
+        export function useBar() {
+          if (bar) {
+            function baz() {
+              useFoo()
+            }
+          }
         }
         `,
         errors: [{ messageId: 'invalidScope' }],

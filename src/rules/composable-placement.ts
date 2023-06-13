@@ -38,6 +38,18 @@ function getCalleeName(node: ESTree.Node): string | null {
   return null
 }
 
+function getParentContext(node: Rule.Node): Rule.Node {
+  if (
+    node.type === 'FunctionDeclaration' ||
+    node.type === 'FunctionExpression' ||
+    node.type === 'ArrowFunctionExpression'
+  ) {
+    return node
+  }
+
+  return node.parent ? getParentContext(node.parent) : node
+}
+
 function isComposableFunction(node: Rule.Node): boolean {
   if (node.type === 'FunctionDeclaration') {
     return composableNameRE.test(node.id?.name ?? '')
@@ -165,13 +177,11 @@ export default {
           })
         }
 
-        const scope = context.sourceCode.getScope(node)
-        const block = scope.block as Rule.Node
+        const ctx = getParentContext(node)
 
-        const isComposableScope = isComposableFunction(block)
-        const isSetupScope = isSetupOption(block)
-        const isScriptSetupRoot =
-          inScriptSetup(node) && block.type === 'Program'
+        const isComposableScope = isComposableFunction(ctx)
+        const isSetupScope = isSetupOption(ctx)
+        const isScriptSetupRoot = inScriptSetup(node) && ctx.type === 'Program'
 
         if (
           !isComposableScope &&
