@@ -88,6 +88,67 @@ useBar()
 </script>
 ```
 
+
+### vue-composable/lifecycle-placement
+
+Enforce lifecycle hook call be placed in `setup()` or another composable, not after an `await` expression.
+Supporting core lifecycle hooks and Vue Router's hooks.
+
+#### Rule Details
+
+Examples of **incorrect** code for this rule:
+
+```js
+function foo() {
+  /* BAD: the lifecycle hook is in non-composable function */
+  onMounted(() => {})
+}
+
+function useBaz() {
+  function qux() {
+    /* BAD: parent function is non-composable function */
+    onMounted(() => {})
+  }
+}
+
+export default defineComponent({
+  async setup() {
+    await fetch()
+
+    /* BAD: the lifecycle hook is after `await` */
+    onMounted(() => {})
+  }
+})
+```
+
+Examples of **correct** code for this rule:
+
+```js
+function useFoo() {
+  /* GOOD: the lifecycle hook is in a composable */
+  onMounted(() => {})
+}
+
+export default defineComponent({
+  setup() {
+    /* GOOD: the lifecycle hook is in setup() */
+    onMounted(() => {})
+  }
+})
+```
+
+```vue
+<script setup>
+/* GOOD: the lifecycle hook is in script setup */
+onMounted(() => {})
+
+await fetch()
+
+/* GOOD: you can place a lifecycle hook after `await` if it is in script setup */
+onBeforeUnmount(() => {})
+</script>
+```
+
 ## License
 
 MIT

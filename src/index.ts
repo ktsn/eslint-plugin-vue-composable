@@ -1,5 +1,6 @@
 import { ESLint } from 'eslint'
 import composablePlacement from './rules/composable-placement'
+import lifecyclePlacement from './rules/lifecycle-placement'
 
 const { name, version } = require('../package.json')
 
@@ -13,6 +14,7 @@ export = {
 
   rules: {
     'composable-placement': composablePlacement,
+    'lifecycle-placement': lifecyclePlacement,
   },
 
   configs: {
@@ -20,6 +22,7 @@ export = {
       plugins: [prefix],
       rules: {
         [`${prefix}/composable-placement`]: 'error',
+        [`${prefix}/lifecycle-placement`]: 'error',
       },
     },
   },

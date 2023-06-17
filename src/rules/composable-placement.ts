@@ -11,7 +11,9 @@ function hasAttribute(el: AST.VElement, name: string): boolean {
   )
 }
 
-function getScriptSetupElement(context: Rule.RuleContext): AST.VElement | null {
+export function getScriptSetupElement(
+  context: Rule.RuleContext
+): AST.VElement | null {
   const df =
     context.parserServices.getDocumentFragment &&
     context.parserServices.getDocumentFragment()
@@ -26,7 +28,7 @@ function getScriptSetupElement(context: Rule.RuleContext): AST.VElement | null {
   return scripts.find((e) => hasAttribute(e, 'setup')) ?? null
 }
 
-function getCalleeName(node: ESTree.Node): string | null {
+export function getCalleeName(node: ESTree.Node): string | null {
   if (node.type === 'Identifier') {
     return node.name
   }
@@ -38,7 +40,7 @@ function getCalleeName(node: ESTree.Node): string | null {
   return null
 }
 
-function getParentContext(node: Rule.Node): Rule.Node {
+export function getParentContext(node: Rule.Node): Rule.Node {
   if (
     node.type === 'FunctionDeclaration' ||
     node.type === 'FunctionExpression' ||
@@ -50,7 +52,7 @@ function getParentContext(node: Rule.Node): Rule.Node {
   return node.parent ? getParentContext(node.parent) : node
 }
 
-function isComposableFunction(node: Rule.Node): boolean {
+export function isComposableFunction(node: Rule.Node): boolean {
   if (node.type === 'FunctionDeclaration') {
     return composableNameRE.test(node.id?.name ?? '')
   }
@@ -69,7 +71,7 @@ function isComposableFunction(node: Rule.Node): boolean {
   return false
 }
 
-function isSetupOption(node: Rule.Node): boolean {
+export function isSetupOption(node: Rule.Node): boolean {
   return (
     (node.type === 'FunctionExpression' ||
       node.type === 'ArrowFunctionExpression') &&
