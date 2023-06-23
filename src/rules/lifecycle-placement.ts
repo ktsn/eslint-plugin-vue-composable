@@ -2,11 +2,9 @@ import { Rule } from 'eslint'
 import * as assert from 'assert'
 import {
   getCalleeName,
-  getParentContext,
   getScriptSetupElement,
-  isComposableFunction,
-  isSetupOption,
-} from './composable-placement'
+  isComposableRoot,
+} from '../utils'
 
 const lifecycleHooks = [
   // Core
@@ -41,18 +39,6 @@ export default {
 
   create(context) {
     const scriptSetup = getScriptSetupElement(context)
-
-    function inScriptSetup(node: Rule.Node): boolean {
-      if (!scriptSetup || !node.range) {
-        return false
-      }
-
-      return (
-        node.range[0] >= scriptSetup.range[0] &&
-        node.range[1] <= scriptSetup.range[1]
-      )
-    }
-
     const functionStack: { node: Rule.Node; firstAwait: Rule.Node | null }[] =
       []
 
@@ -100,13 +86,7 @@ export default {
           })
         }
 
-        const ctx = getParentContext(node)
-
-        const isComposableScope = isComposableFunction(ctx)
-        const isSetupScope = isSetupOption(ctx)
-        const isScriptSetupRoot = inScriptSetup(node) && ctx.type === 'Program'
-
-        if (!isComposableScope && !isSetupScope && !isScriptSetupRoot) {
+        if (!isComposableRoot(node, scriptSetup)) {
           context.report({
             node,
             messageId: 'invalidContext',

@@ -1,86 +1,11 @@
 import { Rule } from 'eslint'
-import * as ESTree from 'estree'
 import * as assert from 'assert'
-import { AST } from 'vue-eslint-parser'
-
-const composableNameRE = /^use[A-Z0-9]/
-
-function hasAttribute(el: AST.VElement, name: string): boolean {
-  return el.startTag.attributes.some(
-    (attr) => !attr.directive && attr.key.name === name
-  )
-}
-
-export function getScriptSetupElement(
-  context: Rule.RuleContext
-): AST.VElement | null {
-  const df =
-    context.parserServices.getDocumentFragment &&
-    context.parserServices.getDocumentFragment()
-  if (!df) {
-    return null
-  }
-
-  const scripts: AST.VElement[] = df.children.filter(
-    (e: AST.Node) => e.type === 'VElement' && e.name === 'script'
-  )
-
-  return scripts.find((e) => hasAttribute(e, 'setup')) ?? null
-}
-
-export function getCalleeName(node: ESTree.Node): string | null {
-  if (node.type === 'Identifier') {
-    return node.name
-  }
-
-  if (node.type === 'MemberExpression') {
-    return getCalleeName(node.property)
-  }
-
-  return null
-}
-
-export function getParentContext(node: Rule.Node): Rule.Node {
-  if (
-    node.type === 'FunctionDeclaration' ||
-    node.type === 'FunctionExpression' ||
-    node.type === 'ArrowFunctionExpression'
-  ) {
-    return node
-  }
-
-  return node.parent ? getParentContext(node.parent) : node
-}
-
-export function isComposableFunction(node: Rule.Node): boolean {
-  if (node.type === 'FunctionDeclaration') {
-    return composableNameRE.test(node.id?.name ?? '')
-  }
-
-  if (
-    node.type === 'FunctionExpression' ||
-    node.type === 'ArrowFunctionExpression'
-  ) {
-    return (
-      node.parent.type === 'VariableDeclarator' &&
-      node.parent.id.type === 'Identifier' &&
-      composableNameRE.test(node.parent.id.name)
-    )
-  }
-
-  return false
-}
-
-export function isSetupOption(node: Rule.Node): boolean {
-  return (
-    (node.type === 'FunctionExpression' ||
-      node.type === 'ArrowFunctionExpression') &&
-    node.parent.type === 'Property' &&
-    node.parent.key.type === 'Identifier' &&
-    node.parent.key.name === 'setup' &&
-    node.parent.parent.type === 'ObjectExpression'
-  )
-}
+import {
+  composableNameRE,
+  getCalleeName,
+  getScriptSetupElement,
+  isComposableRoot,
+} from '../utils'
 
 function inPiniaStoreArg(node: Rule.Node | null): boolean {
   if (!node) {
@@ -99,7 +24,7 @@ function inPiniaStoreArg(node: Rule.Node | null): boolean {
     return inPiniaStoreArg(node.parent)
   }
 
-  return getCalleeName(node.callee) === 'defineStore'
+  return getCalleeName(node) === 'defineStore'
 }
 
 function inPiniaStoreRootScope(node: Rule.Node | null): boolean {
@@ -131,18 +56,6 @@ export default {
 
   create(context) {
     const scriptSetup = getScriptSetupElement(context)
-
-    function inScriptSetup(node: Rule.Node): boolean {
-      if (!scriptSetup || !node.range) {
-        return false
-      }
-
-      return (
-        node.range[0] >= scriptSetup.range[0] &&
-        node.range[1] <= scriptSetup.range[1]
-      )
-    }
-
     const functionStack: { node: Rule.Node; firstAwait: Rule.Node | null }[] =
       []
 
@@ -190,16 +103,8 @@ export default {
           })
         }
 
-        const ctx = getParentContext(node)
-
-        const isComposableScope = isComposableFunction(ctx)
-        const isSetupScope = isSetupOption(ctx)
-        const isScriptSetupRoot = inScriptSetup(node) && ctx.type === 'Program'
-
         if (
-          !isComposableScope &&
-          !isSetupScope &&
-          !isScriptSetupRoot &&
+          !isComposableRoot(node, scriptSetup) &&
           !inPiniaStoreRootScope(node)
         ) {
           context.report({
