@@ -35,6 +35,15 @@ describe('vue-composable/lifecycle-placement', () => {
       },
       {
         code: `
+        export function useBar() {
+          onMounted(() => {
+            onBeforeMount(() => {})
+          })
+        }
+        `,
+      },
+      {
+        code: `
         import * as vue from 'vue'
         export function useBar() {
           vue.onMounted(() => {})

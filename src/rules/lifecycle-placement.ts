@@ -2,6 +2,7 @@ import { Rule } from 'eslint'
 import * as assert from 'assert'
 import {
   getCalleeName,
+  getParentContext,
   getScriptSetupElement,
   isComposableRoot,
 } from '../utils'
@@ -86,7 +87,12 @@ export default {
           })
         }
 
-        if (!isComposableRoot(node, scriptSetup)) {
+        const parentCtx = getParentContext(node)
+        const isInLifecycle =
+          parentCtx.parent?.type === 'CallExpression' &&
+          lifecycleHooks.includes(getCalleeName(parentCtx.parent) ?? '')
+
+        if (!isComposableRoot(node, scriptSetup) && !isInLifecycle) {
           context.report({
             node,
             messageId: 'invalidContext',

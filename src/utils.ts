@@ -20,7 +20,7 @@ export function getCalleeName(node: ESTree.Node): string | null {
   return null
 }
 
-function getParentContext(node: Rule.Node): Rule.Node {
+export function getParentContext(node: Rule.Node): Rule.Node {
   if (
     node.type === 'FunctionDeclaration' ||
     node.type === 'FunctionExpression' ||

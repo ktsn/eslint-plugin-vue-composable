@@ -132,7 +132,10 @@ function useFoo() {
 export default defineComponent({
   setup() {
     /* GOOD: the lifecycle hook is in setup() */
-    onMounted(() => {})
+    onMounted(() => {
+      /* GOOD: the lifecycle hook can be in another lifecycle hook */
+      onBeforeMount(() => {})
+    })
   }
 })
 ```
